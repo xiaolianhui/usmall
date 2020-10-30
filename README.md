@@ -4,7 +4,7 @@
 
 首页是商城产品数量形成的折线图，折线图还没有更新，后续更新
 
-![image-20201030192523204](C:\Users\19238\AppData\Roaming\Typora\typora-user-images\image-20201030192523204.png)
+![](D:\0706web\第四阶段\项目\usmall\usmall-images\image-20201030192523204.png)
 
 ##  
 
