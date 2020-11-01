@@ -10,8 +10,10 @@
          <el-form-item v-for="(item,index) in attrArr" :key="index" label="规格属性" :label-width="formLabelWidth">
            <div class="specBox">
                 <el-input class="ipt" v-model="item.val" autocomplete="off"></el-input>
+
+                
                 <el-button type="success" v-if="index===0" @click="specAdd">新增规格属性</el-button>
-                <el-button type="danger" v-else @click="specDel(inedx)">删除</el-button>
+                <el-button type="danger" v-else @click="specDel(index)">删除</el-button>
            </div>
         </el-form-item>
 

@@ -8,11 +8,13 @@
 <script>
 import vList from "./components/list"
 import vAdd from "./components/add"
+
 export default {
 components:{
     vList,
     vAdd
  },
+
 data () {
  return {
      info:{

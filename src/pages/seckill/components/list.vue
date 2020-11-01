@@ -1,5 +1,5 @@
 <template>
-<div>
+<div >
      <el-table
       :data="list"
       style="width: 100%; margin-bottom: 20px"
@@ -7,31 +7,13 @@
       border
       :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
     >
-      <el-table-column prop="id" label="商品编号" sortable width="180">
-      </el-table-column>
 
-      <el-table-column prop="goodsname" label="商品名称" sortable width="180">
-      </el-table-column>
-      <el-table-column label="图片" sortable width="180">
-        <template slot-scope="scope">
-          <img :src="$imgPre+scope.row.img" >
-        </template>
-      </el-table-column>
 
-      <el-table-column prop="status" label="是否新品">
-        <template slot-scope="scope">
-          <el-button type="success" v-if="scope.row.isnew == 1">是</el-button>
-          <el-button type="danger" v-if="scope.row.isnew == 2">否</el-button>
-        </template>
+      <el-table-column prop="title" label="活动名称" sortable width="180">
       </el-table-column>
+     
 
-      <el-table-column prop="status" label="是否热卖">
-        <template slot-scope="scope">
-          <el-button type="success" v-if="scope.row.ishot == 1">是</el-button>
-          <el-button type="danger" v-if="scope.row.ishot == 2">否</el-button>
-        </template>
-      </el-table-column>
-
+    
       <el-table-column prop="status" label="状态">
         <template slot-scope="scope">
           <el-button type="success" v-if="scope.row.status == 1">启用</el-button>
@@ -46,8 +28,6 @@
       </el-table-column>
     </el-table>
 
-     <el-pagination @current-change="changePage" layout="prev, pager, next" :page-size="size" :total="total">
-    </el-pagination>
 </div>
 </template>
 <script>
@@ -59,10 +39,7 @@ components:{
  },
  computed: {
    ...mapGetters({
-     list:"goods/list",
-     total:"goods/total",
-     size:"goods/size",
-     page:"goods/page"
+     list:"seckill/list",
    })
  },
 data () {
@@ -71,9 +48,7 @@ data () {
 },
 methods:{
   ...mapActions({
-    requestGoodList:"goods/requestGoodList",
-    requestGoodsTotal:"goods/requestGoodsTotal",
-    requestGoodsPage:"goods/requestGoodsPage"
+    requestSeckillList:"seckill/requestSeckillList",
   }),
  del(id) {
       this.$confirm("您确定要删除吗, 是否继续?", "提示", {
@@ -100,20 +75,16 @@ methods:{
 edit(id){
   this.$emit("init",id)
 },
-changePage(page){
-  this.requestGoodsPage(page);
-  this.requestGoodList()
 
-}
 
 },
 mounted(){
-  this.requestGoodList();
-  this.requestGoodsTotal();
+  this.requestSeckillList();
 }
 }
 </script>
 <style scoped>
+
 img{
   width: 100px;
   height: 100px;

@@ -1,6 +1,6 @@
 <template>
   <div class="add">
-    <el-dialog :title="info.title" :visible.sync="info.isShow">
+    <el-dialog :title="info.title" :visible.sync="info.isShow" @opened="opened">
       <el-form :model="form">
         <el-form-item label="一级分类" :label-width="mwidth">
           <el-select v-model="form.first_cateid" placeholder="请选择一级分类" @change="changeFirst" >
@@ -97,8 +97,9 @@
           ></el-switch>
         </el-form-item>
 
-         <el-form-item label="状态" :label-width="mwidth">
-             <textarea v-model="form.description"  cols="30" rows="10"></textarea>
+         <el-form-item label="描述" :label-width="mwidth">
+             <!-- <textarea v-model="form.description"  cols="30" rows="10"></textarea> -->
+             <div v-if="info.isShow" id="editor"></div>
         </el-form-item>
 
 
@@ -117,8 +118,9 @@
 
 <script>
 import {mapActions,mapGetters} from "vuex"
-import {reqClassifyList,reqSpecList,reqGoodsAdd,reqOneGoods} from "../../../util/request"
+import {reqClassifyList,reqSpecList,reqGoodsAdd,reqOneGoods,reqGoodsUpdate} from "../../../util/request"
 import {alertSuccess,alertWarning} from "../../../util/alert"
+import E from 'wangeditor'
 export default {
   props: ["info"],
   components: {},
@@ -159,7 +161,8 @@ export default {
         //  商品列表
          requestGoodList:"goods/requestGoodList",
          reqCateList:"classify/reqCateList",
-         requestSpecList: "spec/requestSpecList"
+         requestSpecList: "spec/requestSpecList",
+         requestGoodsTotal:"goods/requestGoodsTotal",
       }),
       // 上传照片时 使用on-change将照片转换成地址
        changeFile(file) {
@@ -167,7 +170,6 @@ export default {
         this.imageUrl = URL.createObjectURL(file.raw);
         // 添加时传给后台的时form中的img  其信息为照片信息
         this.form.img = file.raw
-       
       },
       // 表格置空
       empty(){
@@ -193,7 +195,9 @@ export default {
       },
       // 添加按钮
       add(){
-
+        // 将富文本中的内容赋值给descript
+        this.form.description = this.editor.txt.html()
+          // 需要进行一下深拷贝，不拷贝的话，将数组转换为字符串数组之后，页面上页不显示了，所以提交时需要深拷贝一下进行提交
            let obj={
         ...this.form
         }
@@ -210,11 +214,31 @@ export default {
             this.info.isShow=false
               alertSuccess("添加成功")
               this.requestGoodList()
+              this.requestGoodsTotal()
           }
         })
       },
+    update(){
+      this.form.description = this.editor.txt.html()
+       // 需要进行一下深拷贝，不拷贝的话，将数组转换为字符串数组之后，页面上页不显示了，所以提交时需要深拷贝一下进行提交
+           let obj={
+        ...this.form
+        }
+        obj.specsattr=JSON.stringify(obj.specsattr)
 
-
+        // 上传文件，需要转换一下
+        let data = new FormData();
+        for(let i in obj){
+          data.append(i,obj[i])
+        }
+        reqGoodsUpdate(data).then(res=>{
+          if(res.data.code==200){
+              this.info.isShow=false
+              alertSuccess("修改成功")
+              this.requestGoodList()
+          }
+        })
+    },
       // 选择一级分类时
       changeFirst(){
         // 首先将二级分类置空，因为一级分类可能会变化
@@ -241,25 +265,50 @@ export default {
         this.attrList =obj.attrs
       },
   look(id){
+    // this.form.description = this.editor.txt.html()
     reqOneGoods(id).then(res=>{
-
+   
+     
+      
+    // 返回来的数据赋值给form
       this.form=res.data.list
+         // 补个id
+    this.form.id=id
+      // 让图片显示，需要加上前缀
+        this.imageUrl= this.$imgPre+this.form.img
+        // 字符串数组转换为真正的数组（规格属性存的时候是字符串数组）
+      this.form.specsattr=JSON.parse(this.form.specsattr)
+
+
+      // 获取商品规格
+      //  this.reqCateList();
+       let obj = this.specList.find(item=>item.id===this.form.specsid)
+
+        this.attrList =obj.attrs
+      //  获取二级分类
+      this.getSecondList()
+      // 请求数据先完成
+       if(this.editor){
+          this.editor.txt.html(this.form.description)
+        }
     })
+  },
+  
+  opened(){
+    this.editor = new E("#editor")
+    this.editor.create()
+    this.editor.txt.html(this.form.description)
   }
   },
   mounted() {
+
       this.reqCateList();
       this.requestSpecList(true)
-      // 获取商品规格
-      // reqSpecList({}).then(res=>{
-      //   console.log("商品规格")
-      //   console.log(this.specList)
-      //   this.specList = res.data.list
-      // })
+
+      
   },
 };
 </script>
-    <!--   -->
 <style lang="stylus"  scoped>
 .add >>>.avatar-uploader .el-upload {
   border: 1px dashed #d9d9d9;

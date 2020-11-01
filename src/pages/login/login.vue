@@ -2,21 +2,37 @@
   <div class="box">
     <div class="con">
       <h2>登录</h2>
-      <el-input class="ipt" placeholder="请输入用户名" v-model="input" clearable> </el-input>
-      <el-input class="ipt" placeholder="请输入密码" v-model="input" show-password></el-input>
-      <input class="login" @click="login" type="button" value="登录" />
+      <el-input class="ipt" placeholder="请输入用户名" v-model="user.username" clearable> </el-input>
+      <el-input class="ipt" placeholder="请输入密码" v-model="user.password" show-password></el-input>
+      <input  class="login" @click="login" type="button" value="登录" />
     </div>
   </div>
 </template>
 <script>
+import {reqLogin} from "../../util/request"
+import {mapActions,mapGetters} from "vuex"
 export default {
   components: {},
   data() {
-    return {};
+    return {
+      user:{
+        username:"",
+        password:""
+      }
+    };
   },
   methods: {
+    ...mapActions({
+      changeUserInfoActions:"changeUserInfoActions"
+    }),
     login(){
-      this.$router.push("/index")
+      reqLogin(this.user).then(res=>{
+        if(res.data.code==200){
+      
+          this.changeUserInfoActions(res.data.list)
+            this.$router.push("/index")
+        }
+      })  
     }
   },
   mounted() {},

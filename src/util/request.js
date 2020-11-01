@@ -2,20 +2,51 @@ import axios from "axios"
 import { alertWarning } from "./alert"
 import qs from "qs"
 import Vue from "vue"
+import store from "../store/index"
+import router from "../router/index"
+
+// 开发环境
 const baseUrl = "/api"
 Vue.prototype.$imgPre = "http://localhost:3000"
 
+//生产环境 打包 
+// let baseUrl = ""
+// Vue.prototype.$imgPre=""
+
+// 前端每一个请求,除了登录之外，都需要携带一个headers.authorization ,值是用户登录成功的token
+// 请求拦截
+axios.interceptors.request.use(req=>{
+	if(req.url!==baseUrl+"/api/login"){
+		req.headers.authorization=store.state.userInfo.token;
+	}
+	return req
+})
+
 // 响应拦截
 axios.interceptors.response.use((res) => {
-	// console.log("111")
 	if (res.data.code!== 200) {
 		alertWarning(res.data.msg)
 		return
 	}
+	// console.group("本次访问的路径是"+res.config.url)
 	console.log(res)
-		return res
 
+	if(res.data.msg==="登录已过期或访问权限受限"){
+		router.push("/login")
+	}
+		return res
 })
+
+
+
+// 登录
+export const reqLogin = (data) => {
+	return axios({
+		url: baseUrl+"/api/userlogin",
+		method: "post",
+		data: qs.stringify(data)
+	})
+}
 
 // 获取菜单列表
 export const reqList = (istree) => {
@@ -307,52 +338,13 @@ export const reqOneGoods = (id) => {
 	})
 }	
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+export const reqGoodsUpdate = (data) => {
+	return axios({
+		url: baseUrl+"/api/goodsedit",
+		method: "post",
+		data:data
+	})
+}	
 
 
 // 获取会员列表
@@ -385,3 +377,76 @@ export const reqEditMember = (form) => {
 		data:qs.stringify(form)
 	})
 }
+
+// /获取总数
+export const reqGoodsTotal = () => {
+	return axios({
+		url: baseUrl+"/api/goodscount",
+		method: "get",
+	})
+}	
+
+
+// 轮播图添加
+
+export const reqBannerAdd = (form) => {
+	return axios({
+		url: baseUrl+"/api/banneradd",
+		method: "post",
+		data:form
+	})
+}	
+// 商品轮播图列表
+// 
+export const reqBannerList = () => {
+	return axios({
+		url: baseUrl+"/api/bannerlist",
+		method: "get",
+	})
+}	
+
+// 商品轮播图修改 
+export const reqBannerDel = (id) => {
+	return axios({
+		url: baseUrl+"/api/bannerdelete",
+		method: "post",
+		data:qs.stringify({
+			id:id
+		})
+	})
+}	
+
+// 商品轮播图获取一条数据
+export const reqOneBanner= (id) => {
+	return axios({
+		url: baseUrl+"/api/bannerinfo",
+		method: "get",
+		params:{
+			id:id
+		}
+	})
+}	
+// 修改商品轮播图
+export const reqBannerUpdate = (data) => {
+	return axios({
+		url: baseUrl+"/api/banneredit",
+		method: "post",
+		data:data
+	})
+}	
+
+// 秒杀列表
+export const reqSeckillList = () => {
+	return axios({
+		url: baseUrl+"/api/secklist",
+		method: "get",
+	})
+}	
+// 秒杀添加
+export const reqSeckillAdd = (form) => {
+	return axios({
+		url: baseUrl+"/api/seckadd",
+		method: "post",
+		data:qs.stringify(form)
+	})
+}	
