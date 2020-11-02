@@ -19,7 +19,7 @@ data () {
  return {
      info:{
          isShow:false,
-         title:"商品添加"
+         title:"限时秒杀添加"
      }
  }
 },
@@ -27,14 +27,14 @@ methods:{
     willAdd(){
         this.info={
             isShow:true,
-            title:"商品添加"
+            title:"限时秒杀添加"
         }
         this.$refs.add.empty()
     },
     edit(id){
         this.info={
             isShow:true,
-            title:"商品修改"
+            title:"限时秒杀修改"
         }
         this.$refs.add.look(id)
     }

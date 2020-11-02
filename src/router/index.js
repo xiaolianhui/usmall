@@ -42,7 +42,7 @@ export const indexRouters = [
   {
     path: "home",
     component: home,
-    name: "首页",
+    // name: "首页",
   },
   {
     path: "classify",

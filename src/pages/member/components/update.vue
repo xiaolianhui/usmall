@@ -30,8 +30,8 @@
   </div>
 </template>
 <script>
-import {reqOneMember,reqEditMember} from "../../../util/request"
-import {alertSuccess,alertWarning} from "../../../util/alert"
+import { reqOneMember, reqEditMember } from "../../../util/request";
+import { alertSuccess, alertWarning } from "../../../util/alert";
 export default {
   components: {},
   data() {
@@ -42,36 +42,49 @@ export default {
         nickname: "",
         phone: "",
         password: "",
-        status:""
+        status: "",
       },
     };
   },
   methods: {
     look(uid) {
       this.dialogFormVisible = true;
-      reqOneMember(uid).then(res=>{
-          this.form = res.data.list
-          this.form.uid=uid
-          this.form.password = ""
-      })
-      
+      reqOneMember(uid).then((res) => {
+        this.form = res.data.list;
+        this.form.uid = uid;
+        this.form.password = "";
+      });
     },
-    update(){
-        
-        if(this.form.password===""){
-            alertWarning("密码不能为空")
-            return
+    checked() {
+      return new Promise((resolve, rejece) => {
+        if (this.form.nickname == "") {
+          alertWarning("昵称不能为空");
+          return;
         }
+        if (this.form.phone == "") {
+          alertWarning("手机号不能为空");
+          return;
+        }
+        if (this.form.password == "") {
+          alertWarning("请输入密码");
+          return;
+        }
+        resolve();
+      });
+    },
+    update() {
+      this.checked().then(() => {
         this.dialogFormVisible = false;
-        reqEditMember(this.form).then(res=>{
-            if(res.data.code===200){
-                alertSuccess("修改成功")
-                this.$emit("init")
-            }else{
-                alertWarning("修改失败")
-            }
-        })
-    }
+        reqEditMember(this.form).then((res) => {
+          if (res.data.code === 200) {
+            alertSuccess("修改成功");
+            this.$emit("init");
+          } else {
+            alertWarning("修改失败");
+          }
+        });
+      });
+    },
   },
   mounted() {},
 };

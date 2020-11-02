@@ -75,43 +75,41 @@ export default {
       });
     },
     edit() {
-    
       this.form.menus = JSON.stringify(this.$refs.tree.getCheckedKeys());
 
-      if (this.form.rolename === "") {
-        alertWarning("请输入用户名！！");
-        return;
-      }
-      if (this.form.menus.length === 2) {
-        alertWarning("请选择相应得权限！！");
-        return;
-      }
-
-      reqEditRole(this.form).then((res) => {
+      this.checked().then(() => {
+        reqEditRole(this.form).then((res) => {
           this.info.isShow = false;
-        this.requestRoleList();
+          this.requestRoleList();
+        });
+      });
+    },
+    checked() {
+      return new Promise((resolve, rejece) => {
+        if (this.form.rolename == "") {
+          alertWarning("角色名称不能为空");
+          return;
+        }
+        if (this.form.menus == "[]") {
+          alertWarning("请选择角色权限");
+          return;
+        }
+        resolve();
       });
     },
     add() {
       this.form.menus = JSON.stringify(this.$refs.tree.getCheckedKeys());
-       if (this.form.rolename === "") {
-        alertWarning("请输入用户名！！");
-        return;
-      }
-      if (this.form.menus.length === 2) {
-        alertWarning("请选择相应得角色权限");
-        return;
-      }
-      reqAddRole(this.form).then((res) => {
-        if (res.data.code == 200) {
-             this.info.isShow = false;
-          this.requestRoleList();
-          alertSuccess(res.data.msg);
-        } else {
-          alertWarning(res.data.msg);
-        }
-      })
-      ;
+      this.checked().then(() => {
+        reqAddRole(this.form).then((res) => {
+          if (res.data.code == 200) {
+            this.info.isShow = false;
+            this.requestRoleList();
+            alertSuccess(res.data.msg);
+          } else {
+            alertWarning(res.data.msg);
+          }
+        });
+      });
     },
     cacel() {
       this.info.isShow = false;

@@ -33,7 +33,7 @@
 <script>
 import {mapActions,mapGetters} from "vuex"
 import {alertSuccess,alertWarning} from "../../../util/alert"
-import {reqGoodsDel} from "../../../util/request"
+import {reqSeckillDel} from "../../../util/request"
 export default {
 components:{
  },
@@ -57,11 +57,10 @@ methods:{
         type: "warning",
       })
       .then(() => {
-          reqGoodsDel(id).then((res) => {
+          reqSeckillDel(id).then((res) => {
             if (res.data.code == 200) {
               alertSuccess(res.data.msg);
-              this.requestGoodList();
-              this.requestGoodsTotal()
+              this.requestSeckillList();
             }else{
               alertWarning(res.data.msg);
             }

@@ -13,7 +13,6 @@
         <!-- :label-width="formLabelWidth" -->
         <el-form-item label="上级菜单">
           <el-select v-model="form.pid" placeholder="请选择菜菜单" @change="changePid">
-            <!-- <el-option label="--请选择--"  :value="''" disabled></el-option> -->
             <el-option v-if="url==''" label="顶级菜单" :value="0">
               <span>顶级菜单</span>
             </el-option>
@@ -85,6 +84,7 @@ import { reqAddList, reqOneList, reqUpdateList } from "../../../util/request";
 import { mapActions, mapGetters } from "vuex";
 import { indexRouters } from "../../../router/index";
 import {alertSuccess,alertWarning} from '../../../util/alert'
+import { resolve } from 'url';
 export default {
   props: ["json"],
   computed: {
@@ -124,6 +124,27 @@ export default {
       });
       this.url =url
     },
+    checked(){
+      return new Promise((resolve,reject)=>{
+        if(this.form.title==""){
+          alertWarning("请填写菜单名称")
+          return
+        }
+         if(this.form.pid===""){
+          alertWarning("请选择上级菜单")
+          return
+        }
+        if(this.form.pid==0&&this.form.icon==""){
+          alertWarning("请选择图标")
+          return
+        }
+          if(this.form.pid!==0&&this.form.url==""){
+          alertWarning("请选择地址")
+          return
+        }
+        resolve()
+      })
+    },
     update() {
       this.json.isShow = false;
       reqUpdateList(this.form).then((res) => {
@@ -146,7 +167,8 @@ export default {
       };
     },
     add() {
-      reqAddList(this.form).then((res) => {
+      this.checked().then(()=>{
+           reqAddList(this.form).then((res) => {
         this.json.isShow = false;
         this.reqMenuList();
         if (res.data.code == 200) {
@@ -155,6 +177,10 @@ export default {
           alertWarning(res.data.msg)
         }
       });
+    
+      })
+     
+    
     },
   },
 

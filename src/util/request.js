@@ -450,3 +450,35 @@ export const reqSeckillAdd = (form) => {
 		data:qs.stringify(form)
 	})
 }	
+
+
+// 秒杀删除
+export const reqSeckillDel = (id) => {
+	return axios({
+		url: baseUrl+"/api/seckdelete",
+		method: "post",
+		data:qs.stringify({
+			id:id
+		})
+	})
+}
+
+// 限时秒杀获取一条参数
+export const reqOneSeckill= (id) => {
+	return axios({
+		url: baseUrl+"/api/seckinfo",
+		method: "get",
+		params:{
+			id:id
+		}
+	})
+}
+
+// 修改限时秒杀
+export const reqSeckillUpdate = (form) => {
+	return axios({
+		url: baseUrl+"/api/seckedit",
+		method: "post",
+		data:qs.stringify(form)
+	})
+}	

@@ -32,7 +32,9 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="info.isShow = false">取 消</el-button>
-        <el-button type="primary" v-if="info.act=='添加'" @click="add">添 加</el-button>
+        <el-button type="primary" v-if="info.act == '添加'" @click="add"
+          >添 加</el-button
+        >
         <el-button type="primary" v-else @click="update">修改</el-button>
       </div>
     </el-dialog>
@@ -40,7 +42,11 @@
 </template>
 <script>
 import { mapGetters, mapActions } from "vuex";
-import { reqMangerAdd, reqOneManger,reqMangerEdit } from "../../../util/request";
+import {
+  reqMangerAdd,
+  reqOneManger,
+  reqMangerEdit,
+} from "../../../util/request";
 import { alertSuccess, alertWarning } from "../../../util/alert";
 
 export default {
@@ -68,23 +74,42 @@ export default {
       requestRoleList: "role/requestRoleList",
     }),
     empty() {
-      this.form =  {
+      this.form = {
         roleid: "",
         username: "",
         password: "",
         status: 1,
       };
     },
-    add() {
-      reqMangerAdd(this.form).then((res) => {
-        if (res.data.code == 200) {
-          this.info.isShow = false;
-          alertSuccess("添加成功");
-          this.empty();
-          this.$emit("init");
-        } else {
-          alertWarning(res.data.msg);
+    checked() {
+      return new Promise((resolve, rejece) => {
+        if (this.form.roleid == "") {
+          alertWarning("请选择角色");
+          return;
         }
+        if (this.form.username == "") {
+          alertWarning("请输入用户名");
+          return;
+        }
+        if (this.form.password == "") {
+          alertWarning("请输入密码");
+          return;
+        }
+        resolve();
+      });
+    },
+    add() {
+      this.checked().then(() => {
+        reqMangerAdd(this.form).then((res) => {
+          if (res.data.code == 200) {
+            this.info.isShow = false;
+            alertSuccess("添加成功");
+            this.empty();
+            this.$emit("init");
+          } else {
+            alertWarning(res.data.msg);
+          }
+        });
       });
     },
     look(uid) {
@@ -95,18 +120,21 @@ export default {
         this.form.password = "";
       });
     },
-    update(){
-      reqMangerEdit(this.form).then(res=>{
-        if(res.data.code===200){
+    update() {
+      this.checked().then(()=>{
+         reqMangerEdit(this.form).then((res) => {
+        if (res.data.code === 200) {
           alertSuccess("修改成功");
-          this.info.isShow= false;
+          this.info.isShow = false;
           this.empty();
           this.$emit("init");
-        }else{
-          alertWarning("修改失败")
+        } else {
+          alertWarning("修改失败");
         }
+      });
       })
-    }
+     
+    },
   },
   mounted() {
     this.requestRoleList();
