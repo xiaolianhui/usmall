@@ -1,6 +1,5 @@
 <template>
   <div id="main">
-      {{list}}
   </div>
 </template>
 <script>
@@ -45,6 +44,7 @@ export default {
                 {
                     name: '子分类数量',
                     type: 'line',
+                    smooth: true,
                     data: this.list.map(item=>item.children?item.children.length:0)
                 },
                 

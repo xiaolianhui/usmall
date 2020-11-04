@@ -10,8 +10,6 @@ function checkedRouter(path,next){
     next("/index")
   }
 }
-
-
 Vue.use(Router)
 
 const login = () => import("../pages/login/login")

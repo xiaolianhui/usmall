@@ -12,15 +12,19 @@
         </el-form-item>
         <!-- :label-width="formLabelWidth" -->
         <el-form-item label="上级菜单">
-          <el-select v-model="form.pid" placeholder="请选择菜菜单" @change="changePid">
-            <el-option v-if="url==''" label="顶级菜单" :value="0">
+          <el-select
+            v-model="form.pid"
+            placeholder="请选择菜菜单"
+            @change="changePid"
+          >
+            <el-option v-if="url == ''" label="顶级菜单" :value="0">
               <span>顶级菜单</span>
             </el-option>
             <el-option
               v-for="item in list"
               :key="item.id"
               :label="item.title"
-              :value="item.id"   
+              :value="item.id"
             ></el-option>
             <!--循环请求回来渲染 -->
           </el-select>
@@ -34,8 +38,8 @@
 
         <el-form-item label="菜单图标" v-if="form.type == 1">
           <el-select v-model="form.icon" placeholder="请选择图标">
-            <el-option value="el-icon-camera-solid">
-              <i class="el-icon-camera-solid"></i>
+            <el-option value="el-icon-setting">
+              <i class="el-icon-setting"></i>
             </el-option>
             <el-option value="el-icon-video-camera-solid">
               <i class="el-icon-video-camera-solid"></i>
@@ -51,12 +55,13 @@
 
         <el-form-item label="菜单地址" v-if="form.type == 2">
           <el-select v-model="form.url" placeholder="请选择">
-            <el-option
-              v-for="item in indexRouters"
-              :key="item.path"
-              :label="item.name"
-              :value="'/'+item.path"
-            ></el-option>
+            <div v-for="item in indexRouters" :key="item.path">
+              <el-option
+                v-if="item.path !== 'home'"
+                :label="item.name"
+                :value="'/' + item.path"
+              ></el-option>
+            </div>
           </el-select>
         </el-form-item>
 
@@ -83,8 +88,8 @@
 import { reqAddList, reqOneList, reqUpdateList } from "../../../util/request";
 import { mapActions, mapGetters } from "vuex";
 import { indexRouters } from "../../../router/index";
-import {alertSuccess,alertWarning} from '../../../util/alert'
-import { resolve } from 'url';
+import { alertSuccess, alertWarning } from "../../../util/alert";
+import { resolve } from "url";
 export default {
   props: ["json"],
   computed: {
@@ -94,7 +99,7 @@ export default {
   },
   data() {
     return {
-      url:"",
+      url: "",
       indexRouters: indexRouters,
       form: {
         pid: "",
@@ -110,49 +115,49 @@ export default {
     ...mapActions({
       reqMenuList: "list/reqMenuList",
     }),
-    changePid(){
-      if(this.form.pid===0){
-        this.form.type=1
-      }else{
-        this.form.type=2
+    changePid() {
+      if (this.form.pid === 0) {
+        this.form.type = 1;
+      } else {
+        this.form.type = 2;
       }
     },
-    look(id,url) {
+    look(id, url) {
       reqOneList({ id: id }).then((res) => {
         this.form = res.data.list;
         this.form.id = id;
       });
-      this.url =url
+      this.url = url;
     },
-    checked(){
-      return new Promise((resolve,reject)=>{
-        if(this.form.title==""){
-          alertWarning("请填写菜单名称")
-          return
+    checked() {
+      return new Promise((resolve, reject) => {
+        if (this.form.title == "") {
+          alertWarning("请填写菜单名称");
+          return;
         }
-         if(this.form.pid===""){
-          alertWarning("请选择上级菜单")
-          return
+        if (this.form.pid === "") {
+          alertWarning("请选择上级菜单");
+          return;
         }
-        if(this.form.pid==0&&this.form.icon==""){
-          alertWarning("请选择图标")
-          return
+        if (this.form.pid == 0 && this.form.icon == "") {
+          alertWarning("请选择图标");
+          return;
         }
-          if(this.form.pid!==0&&this.form.url==""){
-          alertWarning("请选择地址")
-          return
+        if (this.form.pid !== 0 && this.form.url == "") {
+          alertWarning("请选择地址");
+          return;
         }
-        resolve()
-      })
+        resolve();
+      });
     },
     update() {
       this.json.isShow = false;
       reqUpdateList(this.form).then((res) => {
         if (res.data.code == 200) {
-          alertSuccess( res.data.msg)
+          alertSuccess(res.data.msg);
           this.reqMenuList();
         } else {
-          alertWarning(res.data.msg)
+          alertWarning(res.data.msg);
         }
       });
     },
@@ -167,20 +172,17 @@ export default {
       };
     },
     add() {
-      this.checked().then(()=>{
-           reqAddList(this.form).then((res) => {
-        this.json.isShow = false;
-        this.reqMenuList();
-        if (res.data.code == 200) {
-          alertSuccess( res.data.msg)
-        } else {
-          alertWarning(res.data.msg)
-        }
+      this.checked().then(() => {
+        reqAddList(this.form).then((res) => {
+          this.json.isShow = false;
+          this.reqMenuList();
+          if (res.data.code == 200) {
+            alertSuccess(res.data.msg);
+          } else {
+            alertWarning(res.data.msg);
+          }
+        });
       });
-    
-      })
-     
-    
     },
   },
 
